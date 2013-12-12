@@ -58,7 +58,7 @@ def ERROR(message,caption='',dialog=True):
 	LOG(message)
 	traceback.print_exc()
 	err = str(sys.exc_info()[1])
-	if dialog: xbmcgui.Dialog().ok(__language__(30520) + caption,err)
+	if dialog: xbmcgui.Dialog().ok(__language__(32520) + caption,err)
 	return err
 
 class SummaryDialog(xbmcgui.WindowXMLDialog):
@@ -68,7 +68,7 @@ class SummaryDialog(xbmcgui.WindowXMLDialog):
 		self.parent = kwargs.get('parent',None)
 	
 	def onInit(self):
-		self.getControl(120).setText(__language__(30025))
+		self.getControl(120).setText(__language__(32025))
 		summary = self.htmlToText(API.getEpSummary(self.link))
 		self.getControl(120).setText(summary)
 		self.setFocusId(121)
@@ -142,13 +142,13 @@ class EpListDialog(xbmcgui.WindowXMLDialog):
 		eptitle = item.getLabel2()
 		efile = self.parent.findXBMCEpFile(self.showname,season,eptitle)
 		if not efile:
-			xbmcgui.Dialog().ok(__language__(30046),__language__(30047))
+			xbmcgui.Dialog().ok(__language__(32046),__language__(32047))
 			return
 		xbmc.Player().play(efile)
 		self.close()
 		
 	def showEpList(self,sid):
-		self.getControl(100).setLabel(__language__(30055))
+		self.getControl(100).setLabel(__language__(32055))
 		result = API.getEpList(sid)
 		show = result.find('name').text
 		self.getControl(100).setLabel(show)
@@ -261,8 +261,8 @@ class TVRageEps(xbmcgui.WindowXML):
 		
 	def doMenu(self):
 		dialog = xbmcgui.Dialog()
-		#idx = dialog.select(__language__(30011),[__language__(30007),__language__(30026),__language__(30013),__language__(30006)])
-		idx = dialog.select(__language__(30011),[__language__(30013),__language__(30054),__language__(30006),__language__(30041)])
+		#idx = dialog.select(__language__(32011),[__language__(32007),__language__(32026),__language__(32013),__language__(32006)])
+		idx = dialog.select(__language__(32011),[__language__(32013),__language__(32054),__language__(32006),__language__(32041)])
 		#if idx == 0: self.search()
 		#elif idx == 1: self.addFromLibrary()
 		if idx == 0: self.reverse()
@@ -270,17 +270,17 @@ class TVRageEps(xbmcgui.WindowXML):
 		elif idx == 2: self.deleteShow()
 		
 	def search(self):
-		keyboard = xbmc.Keyboard('',__language__(30005))
+		keyboard = xbmc.Keyboard('',__language__(32005))
 		keyboard.doModal()
 		if not keyboard.isConfirmed(): return
 		term = keyboard.getText()
 		pdialog = xbmcgui.DialogProgress()
-		pdialog.create(__language__(30017))
+		pdialog.create(__language__(32017))
 		pdialog.update(0)
 		try:
 			result = API.search(term)
 		except:
-			ERROR('FAILED SEARCH',__language__(30031))
+			ERROR('FAILED SEARCH',__language__(32031))
 			pdialog.close()
 			return
 		pdialog.close()
@@ -304,7 +304,7 @@ class TVRageEps(xbmcgui.WindowXML):
 		return text
 	
 	def userPickShow(self,result,append=''):
-		slist = ['< %s >' % (__language__(30040)),__language__(30048).replace('@REPLACE@',append)]
+		slist = ['< %s >' % (__language__(32040)),__language__(32048).replace('@REPLACE@',append)]
 		sids = [None,'0']
 		if result:
 			for s in result.findall('show'):
@@ -313,13 +313,13 @@ class TVRageEps(xbmcgui.WindowXML):
 				sids.append(s.find('showid').text)
 		dialog = xbmcgui.Dialog()
 		if append: append = ': ' + append
-		idx = dialog.select(__language__(30008) + append,slist)
+		idx = dialog.select(__language__(32008) + append,slist)
 		if idx < 0: return None
 		return sids[idx]
 		
 	def addFromLibrary(self):
 		pdialog = xbmcgui.DialogProgress()
-		pdialog.create(__language__(30027))
+		pdialog.create(__language__(32027))
 		try:
 			pdialog.update(0)
 			if self.json_use_http:
@@ -329,10 +329,10 @@ class TVRageEps(xbmcgui.WindowXML):
 			try:
 				shows = jrapi.VideoLibrary.GetTVShows()
 			except jsonrpc.UserPassError:
-				xbmcgui.Dialog().ok(__language__(30031),__language__(30032),__language__(30033),__language__(30034))
+				xbmcgui.Dialog().ok(__language__(32031),__language__(32032),__language__(32033),__language__(32034))
 				return
 			except jsonrpc.ConnectionError:
-				xbmcgui.Dialog().ok(__language__(30031),__language__(30035),__language__(30036),__language__(30037))
+				xbmcgui.Dialog().ok(__language__(32031),__language__(32035),__language__(32036),__language__(32037))
 				return
 			if not 'tvshows' in shows: return #TODO put a dialog here
 			tot = len(shows['tvshows'])
@@ -361,7 +361,7 @@ class TVRageEps(xbmcgui.WindowXML):
 					except:
 						failed +=1
 						err = ERROR('FROM LIBRARY SEARCH FAILED',dialog=False)
-						error = '[COLOR FFFF0000]%s: %s - %s[/COLOR]' % (__language__(30031),title,err)
+						error = '[COLOR FFFF0000]%s: %s - %s[/COLOR]' % (__language__(32031),title,err)
 						continue
 					close = None
 					if result:
@@ -371,13 +371,13 @@ class TVRageEps(xbmcgui.WindowXML):
 						close = difflib.get_close_matches(title,matches.keys(),1,0.8)
 					if close:
 						LOG("SHOW: " + title + " - MATCHES: " + close[0])
-						pdialog.update(int((ct/tot)*100),__language__(30028) + title)
+						pdialog.update(int((ct/tot)*100),__language__(32028) + title)
 						try:
 							self.doAddShow(matches[close[0]],skipCanceled=self.skip_canceled)
 						except:
 							failed += 1
 							err = ERROR('FROM LIBRARY ADD FAILED',dialog=False)
-							error = '[COLOR FFFF0000]%s: %s - %s[/COLOR]' % (__language__(30031),title,err)
+							error = '[COLOR FFFF0000]%s: %s - %s[/COLOR]' % (__language__(32031),title,err)
 							continue
 						added+=1
 					else:
@@ -391,8 +391,8 @@ class TVRageEps(xbmcgui.WindowXML):
 			pdialog.close()
 		while at_end:
 			left = []
-			for s in at_end: left.append(__language__(30051) + s[0])
-			idx = xbmcgui.Dialog().select(__language__(30052),['< %s >' % (__language__(30053))] + left)
+			for s in at_end: left.append(__language__(32051) + s[0])
+			idx = xbmcgui.Dialog().select(__language__(32052),['< %s >' % (__language__(32053))] + left)
 			if idx < 1: break
 			title,result = at_end.pop(idx-1)
 			sid = self.userPickShow(result,append=title)
@@ -405,24 +405,24 @@ class TVRageEps(xbmcgui.WindowXML):
 		self.saveData()
 		self.updateDisplay()
 		skipped = ct - (added + exist)
-		xbmcgui.Dialog().ok(	__language__(30042),
-								__language__(30043).replace('@NUMBER1@',str(added)).replace('@NUMBER2@',str(int(ct))),
-								__language__(30044).replace('@NUMBER@',str(exist)),
-								__language__(30045).replace('@NUMBER1@',str(int(skipped))).replace('@NUMBER2@',str(failed)))
+		xbmcgui.Dialog().ok(	__language__(32042),
+								__language__(32043).replace('@NUMBER1@',str(added)).replace('@NUMBER2@',str(int(ct))),
+								__language__(32044).replace('@NUMBER@',str(exist)),
+								__language__(32045).replace('@NUMBER1@',str(int(skipped))).replace('@NUMBER2@',str(failed)))
 		
 	def addShow(self,sid,okdialog=True,name=''):
 		pdialog = xbmcgui.DialogProgress()
-		pdialog.create(__language__(30016),name)
+		pdialog.create(__language__(32016),name)
 		pdialog.update(0)
 		for s in self.shows:
 			if s.showid == sid:
 				pdialog.close()
-				if okdialog: xbmcgui.Dialog().ok(__language__(30014),__language__(30015))
+				if okdialog: xbmcgui.Dialog().ok(__language__(32014),__language__(32015))
 				return
 		try:
 			self.shows.append(Show(showid=sid).getShowData())
 		except:
-			ERROR('FAILED TO ADD SHOW',__language__(30031))
+			ERROR('FAILED TO ADD SHOW',__language__(32031))
 			pdialog.close()
 			return
 		self.saveData()
@@ -442,7 +442,7 @@ class TVRageEps(xbmcgui.WindowXML):
 				break
 			ct+=1
 		dialog = xbmcgui.Dialog()
-		choice = dialog.yesno(__language__(30009),__language__(30010).replace('@REPLACE@',s.name))
+		choice = dialog.yesno(__language__(32009),__language__(32010).replace('@REPLACE@',s.name))
 		if not choice: return
 		self.shows.pop(ct)
 		self.saveData()
@@ -453,7 +453,7 @@ class TVRageEps(xbmcgui.WindowXML):
 		if not item: return
 		sid = item.getProperty('id')
 		if sid == '0':
-			xbmcgui.Dialog().ok(__language__(30049),__language__(30050))
+			xbmcgui.Dialog().ok(__language__(32049),__language__(32050))
 			return
 		showname = item.getLabel()
 		w = EpListDialog("script-tvrage-eplist.xml" , __addon__.getAddonInfo('path'), "Default",sid=sid,showname=showname,parent=self)
@@ -490,7 +490,7 @@ class TVRageEps(xbmcgui.WindowXML):
 		mshow = difflib.get_close_matches(show,labels,1,0.7)
 		if not mshow: return
 		mshow = mshow[0]
-		eplist = jrapi.VideoLibrary.GetEpisodes(tvshowid=ids[labels.index(mshow)],season=season)
+		eplist = jrapi.VideoLibrary.GetEpisodes(tvshowid=ids[labels.index(mshow)],season=int(season),properties=['file'])
 		if not 'episodes' in eplist: return
 		labels = []
 		files = []
@@ -507,7 +507,7 @@ class TVRageEps(xbmcgui.WindowXML):
 		
 	def updateData(self):
 		progress = xbmcgui.DialogProgress()
-		progress.create(__language__(30003),__language__(30004))
+		progress.create(__language__(32003),__language__(32004))
 		try:
 			lmax = len(self.shows)
 			ct=0
@@ -519,7 +519,7 @@ class TVRageEps(xbmcgui.WindowXML):
 					if show and not show.canceled and show.showid != '0': show.getShowData()
 				except:
 					err = ERROR('FAILED TO UPDATE SHOW: %s' % show.name,dialog=False)
-					error = '[COLOR FFFF0000]%s: %s - %s[/COLOR]' % (__language__(30031),show.name,err)
+					error = '[COLOR FFFF0000]%s: %s - %s[/COLOR]' % (__language__(32031),show.name,err)
 				if progress.iscanceled(): break
 				ct+=1
 				percent = int((float(ct)/lmax)*100)
@@ -569,13 +569,13 @@ class TVRageEps(xbmcgui.WindowXML):
 						
 			item.setProperty("summary",show.airtime(self.air_offset))
 			if show.canceled:
-				item.setProperty("summary",__language__(30030))
+				item.setProperty("summary",__language__(32030))
 			elif show.isDummy():
 				item.setProperty("summary",'')
 			
 			item.setProperty("updated",show.nextEp['number'] + ' ' + show.nextEp['title'])
-			if show.canceled: item.setProperty("updated",__language__(30029))
-			item.setProperty("last",__language__(30012) + ' ' + show.lastEp['number'] + ' ' + show.lastEp['title'] + ' ' + show.lastEp['date'])
+			if show.canceled: item.setProperty("updated",__language__(32029))
+			item.setProperty("last",__language__(32012) + ' ' + show.lastEp['number'] + ' ' + show.lastEp['title'] + ' ' + show.lastEp['date'])
 			item.setProperty("image",show.imagefile)
 			item.setProperty("id",show.showid)
 			self.getControl(120).addItem(item)

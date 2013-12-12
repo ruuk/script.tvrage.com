@@ -1,6 +1,14 @@
 TVRage-Eps Changelog
 
-Current Version : 1.0.9
+Current Version : 1.0.10
+
+*** 1.0.10 ***
+
+Fix skin string localization
+Update addon.xml for Gotham
+Converted strings.xml to strings.po
+Added XML declarations
+Fix bug causing errors when trying to play a video
 
 *** 1.0.9 ***
 
