@@ -1,19 +1,22 @@
-import os
-import time
-import re
-import urllib
-import traceback
+import os, sys, time, re, urllib, traceback
+
 try:
 	import elementtree.ElementTree as etree #@UnresolvedImport @UnusedImport
 except:
 	import xml.etree.ElementTree as etree #@Reimport
 	
+DEBUG = False
+
 def LOG(msg):
 	print msg.encode('ascii','replace')
 	
-def ERROR(msg):
-	LOG(msg)
-	traceback.print_exc()
+def ERROR(msg,short=False):
+	if short and not DEBUG:
+		err = str(sys.exc_info()[1])
+		LOG('%s (%s)' % (msg,err))
+	else:
+		LOG(msg)
+		traceback.print_exc()
 	
 class Show:
 	THUMB_PATH = ''
@@ -21,27 +24,31 @@ class Show:
 	def __init__(self,showid='',xmltree=None,name=''):
 		self.showid = showid
 		self.name = name
-		self._airtime = ''
-		self.next = {}
-		self.last = {}
 		self.imagefile = os.path.join(self.THUMB_PATH,self.showid + '.jpg')
-		self.nextUnix = 0
-		self.status = ''
-		self.canceled = ''
-		self.lastEp = {'number':'?','title':'Unknown','date':''}
-		self.nextEp = {'number':'?','title':'Unknown','date':''}
+		self.init()
 		if xmltree:
 			self.tree = xmltree
 			self.processTree(xmltree)
 		elif self.isDummy():
 			self.tree = etree.fromstring('<show id="0"><name>'+name+'</name></show>')
 		
+	def init(self):
+		self._airtime = ''
+		self.next = {}
+		self.last = {}
+		self.nextUnix = 0
+		self.status = ''
+		self.canceled = ''
+		self.lastEp = {'number':'?','title':'Unknown','date':''}
+		self.nextEp = {'number':'?','title':'Unknown','date':''}
 		
+			
 	def isDummy(self):
 		return self.showid == '0'
 		
 	def getShowData(self):
 		if self.isDummy(): return
+		self.init()
 		tree = self.API.getShowInfo(self.showid)
 		self.processTree(tree)
 		return self
@@ -80,8 +87,8 @@ class Show:
 		last = show.find('latestepisode')
 		self.lastEp = self.epInfo(last)
 		
-		next = show.find('nextepisode')
-		if next: self.nextEp = self.epInfo(next)
+		nextEp = show.find('nextepisode')
+		if nextEp: self.nextEp = self.epInfo(nextEp)
 		
 		if not os.path.exists(self.imagefile):
 			try:
@@ -98,8 +105,8 @@ class Show:
 				struct = time.strptime(date + ' ' + self._airtime,'%Y-%m-%d %I:%M %p')
 				unixtime = time.mktime(struct)+(offset*3600)
 				return time.strftime('%I:%M %p',time.localtime(unixtime))
-				ERROR('Failed to create airtime without nextEp, using TVRage airtime.')
 			except:
+				if not self.canceled: ERROR('Failed to create airtime for {0} without nextEp, using TVRage airtime.'.format(self.name),True)
 				return self._airtime
 		else:
 			return time.strftime('%I:%M %p',time.localtime(self.getNextUnix(offset=offset)))
@@ -118,7 +125,7 @@ class Show:
 				struct = time.strptime(self.nextEp['date'] + ' ' + self._airtime,'%Y-%m-%d %I:%M %p')
 				srt = time.mktime(struct)
 			except:
-				srt = time.time()+60*60*24*365*10
+				srt = time.time()+(60*60*24*365*10)
 				if self.canceled: srt += 3600
 				elif self.isDummy(): srt += 3601
 			self.nextUnix = srt
@@ -243,8 +250,8 @@ class TVRageAPI:
 		w.close()
 		return linedata
 	
-def saveURLToFile(url,file,hook=None,e_hook=None):
+def saveURLToFile(url,fname,hook=None,e_hook=None):
 	try:
-		urllib.urlretrieve(url,file,hook)
+		urllib.urlretrieve(url,fname,hook)
 	except:
 		if e_hook: e_hook()

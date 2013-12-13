@@ -243,7 +243,15 @@
 						<align>left</align>
 						<info>ListItem.Property(updated)</info>
 					</control>
-
+					<control type="image">
+						<posx>0</posx>
+						<posy>0</posy>
+						<width>1040</width>
+						<height>38</height>
+						<texture>white_square.png</texture>
+						<colordiffuse>80000000</colordiffuse>
+						<visible>StringCompare(ListItem.Property(canceled),1)</visible>
+					</control>
 				</itemlayout>
 				<focusedlayout height="38">
 					<control type="image">

@@ -10,8 +10,8 @@ from tvrageapi import Episode, Show, TVRageAPI
 __author__ = 'ruuk'
 __url__ = 'http://code.google.com/p/tvragexbmc/'
 __date__ = '1-21-2012'
-__version__ = '1.0.9'
 __addon__ = xbmcaddon.Addon(id='script.tvrage.com')
+__version__ = __addon__.getAddonInfo('version')
 __language__ = __addon__.getLocalizedString
 
 #for k in xbmc.__dict__.keys(): print k
@@ -63,7 +63,7 @@ def ERROR(message,caption='',dialog=True):
 
 class SummaryDialog(xbmcgui.WindowXMLDialog):
 	def __init__( self, *args, **kwargs ):
-		xbmcgui.WindowXMLDialog.__init__( self, *args, **kwargs )
+		xbmcgui.WindowXMLDialog.__init__( self )
 		self.link = kwargs.get('link','')
 		self.parent = kwargs.get('parent',None)
 	
@@ -100,7 +100,7 @@ class SummaryDialog(xbmcgui.WindowXMLDialog):
 
 class EpListDialog(xbmcgui.WindowXMLDialog):
 	def __init__( self, *args, **kwargs ):
-		xbmcgui.WindowXMLDialog.__init__( self, *args, **kwargs )
+		xbmcgui.WindowXMLDialog.__init__( self )
 		self.sid = kwargs.get('sid','')
 		self.showname = kwargs.get('showname','')
 		self.parent = kwargs.get('parent',None)
@@ -170,7 +170,7 @@ class EpListDialog(xbmcgui.WindowXMLDialog):
 				
 class TVRageEps(xbmcgui.WindowXML):
 	def __init__( self, *args, **kwargs ):
-		xbmcgui.WindowXML.__init__( self, *args, **kwargs )
+		xbmcgui.WindowXML.__init__( self )
 	
 	def onInit(self):
 		self.lastUpdateFile = xbmc.translatePath('special://profile/addon_data/script.tvrage.com/last')
@@ -575,6 +575,7 @@ class TVRageEps(xbmcgui.WindowXML):
 			
 			item.setProperty("updated",show.nextEp['number'] + ' ' + show.nextEp['title'])
 			if show.canceled: item.setProperty("updated",__language__(32029))
+			item.setProperty("canceled",show.canceled and '1' or '0')
 			item.setProperty("last",__language__(32012) + ' ' + show.lastEp['number'] + ' ' + show.lastEp['title'] + ' ' + show.lastEp['date'])
 			item.setProperty("image",show.imagefile)
 			item.setProperty("id",show.showid)
@@ -582,23 +583,25 @@ class TVRageEps(xbmcgui.WindowXML):
 		if self.jump_to_bottom: self.getControl(120).selectItem(self.getControl(120).size()-1)
 		#xbmcgui.unlock()
 		
-	def fileRead(self,file):
-		if not os.path.exists(file): return ''
-		f = open(file,'r')
+	def fileRead(self,fname):
+		if not os.path.exists(fname): return ''
+		f = open(fname,'r')
 		data = f.read()
 		f.close()
 		return data
 	
-	def fileReadList(self,file):
-		return self.fileRead(file).splitlines()
+	def fileReadList(self,fname):
+		return self.fileRead(fname).splitlines()
 		
-	def fileWrite(self,file,data):
-		f = open(file,'w')
+	def fileWrite(self,fname,data):
+		f = open(fname,'w')
 		f.write(data)
 		f.close()
 
-	def fileWriteList(self,file,dataList):
-		self.fileWrite(file,'\n'.join(dataList))
+	def fileWriteList(self,fname,dataList):
+		self.fileWrite(fname,'\n'.join(dataList))
+
+LOG('Version: {0}'.format(__version__))
 
 API = TVRageAPI()
 Show.API = API

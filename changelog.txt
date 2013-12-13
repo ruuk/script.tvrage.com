@@ -1,6 +1,11 @@
 TVRage-Eps Changelog
 
-Current Version : 1.0.10
+Current Version : 1.0.11
+
+*** 1.0.11 ***
+
+Fixed a bug that intermittently causes shows to sort improperly on startup
+Canceled shows are now dimmed to better differentiate from current shows
 
 *** 1.0.10 ***
 
