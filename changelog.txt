@@ -1,6 +1,11 @@
 TVRage-Eps Changelog
 
-Current Version : 1.0.12
+Current Version : 1.0.13
+
+*** 1.0.13 ***
+
+Now search is aborted when no terms are entered
+Added some debug logging
 
 *** 1.0.12 ***
 

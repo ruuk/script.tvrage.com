@@ -274,6 +274,7 @@ class TVRageEps(xbmcgui.WindowXML):
 		keyboard.doModal()
 		if not keyboard.isConfirmed(): return
 		term = keyboard.getText()
+		if not term.strip(): return
 		pdialog = xbmcgui.DialogProgress()
 		pdialog.create(__language__(32017))
 		pdialog.update(0)
@@ -324,10 +325,12 @@ class TVRageEps(xbmcgui.WindowXML):
 			pdialog.update(0)
 			if self.json_use_http:
 				jrapi = jsonrpc.jsonrpcAPI(mode='http',url=self.http_address + '/jsonrpc',user=self.http_user,password=self.http_pass)
+				LOG("JSONRPCAPI: Using HTTP.")
 			else:
 				jrapi = jsonrpc.jsonrpcAPI()
 			try:
 				shows = jrapi.VideoLibrary.GetTVShows()
+				LOG("JSONRPCAPI returned successfully.")
 			except jsonrpc.UserPassError:
 				xbmcgui.Dialog().ok(__language__(32031),__language__(32032),__language__(32033),__language__(32034))
 				return
@@ -336,7 +339,7 @@ class TVRageEps(xbmcgui.WindowXML):
 				return
 			if not 'tvshows' in shows:
 				xbmcgui.Dialog().ok(__language__(32031),__language__(32056))
-				return #TODO put a dialog here
+				return
 			tot = len(shows['tvshows'])
 			ct=0.0
 			added=0
