@@ -1,6 +1,10 @@
 TVRage-Eps Changelog
 
-Current Version : 1.0.16
+Current Version : 1.0.17
+
+*** 1.0.17 ***
+
+Fix addon.xml requests import
 
 *** 1.0.16 ***
 
