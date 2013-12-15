@@ -324,18 +324,20 @@ class TVRageEps(xbmcgui.WindowXML):
 		try:
 			pdialog.update(0)
 			if self.json_use_http:
-				jrapi = jsonrpc.jsonrpcAPI(mode='http',url=self.http_address + '/jsonrpc',user=self.http_user,password=self.http_pass)
-				LOG("JSONRPCAPI: Using HTTP.")
+				jrapi = jsonrpc.jsonrpcAPI(mode='http',url=self.http_address,user=self.http_user,password=self.http_pass)
+				LOG("JSONRPCAPI: Using HTTP")
 			else:
 				jrapi = jsonrpc.jsonrpcAPI()
 			try:
 				shows = jrapi.VideoLibrary.GetTVShows()
-				LOG("JSONRPCAPI returned successfully.")
+				LOG("JSONRPCAPI returned successfully")
 			except jsonrpc.UserPassError:
 				xbmcgui.Dialog().ok(__language__(32031),__language__(32032),__language__(32033),__language__(32034))
+				LOG("JSONRPCAPI user/pass error")
 				return
-			except jsonrpc.ConnectionError:
+			except jsonrpc.ConnectionError,e:
 				xbmcgui.Dialog().ok(__language__(32031),__language__(32035),__language__(32036),__language__(32037))
+				LOG("JSONRPCAPI error: {0}".format(e.message))
 				return
 			if not 'tvshows' in shows:
 				xbmcgui.Dialog().ok(__language__(32031),__language__(32056))

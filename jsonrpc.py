@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
 import urllib2, simplejson
+
+import warnings
+warnings.filterwarnings("ignore", category=UserWarning, module='urllib2')
+
 try:
 	import xbmc #@UnresolvedImport
 except:
@@ -43,6 +47,10 @@ class httpNamespace(baseNamespace):
 		self.__handler_cache = {}
 		self.api = api
 		self.name = name
+		password_mgr = urllib2.HTTPPasswordMgrWithDefaultRealm()
+		password_mgr.add_password(None, self.api.base, self.api.user, self.api.password)
+		handler = urllib2.HTTPBasicAuthHandler(password_mgr)
+		self.__opener = urllib2.build_opener(handler)
 		
 	def __getattr__(self, method):
 		if method in self.__handler_cache:
@@ -52,11 +60,20 @@ class httpNamespace(baseNamespace):
 			postdata = self.createParams(method,args,kwargs)
 			
 			try:
-				fobj = urllib2.urlopen(self.api.url,postdata)
+				req = urllib2.Request(self.api.url)
+				req.add_header('Content-Type', 'application/json; charset=utf-8')
+				req.add_data(postdata)
+				fobj = self.__opener.open(req)
 			except IOError,e:
-				if e.args[0] == 'http error':
-					if e.args[1] == 401: raise UserPassError()
-				raise ConnectionError(e.errno,'Connection error: ' + str(e.errno))
+				if isinstance(e,urllib2.HTTPError):
+					error = e.reason
+				else:
+					error = e.message or repr(e) or '?'
+				if e.args:
+					if e.args[0] == 'http error':
+						if e.args[1] == 401: raise UserPassError()
+					error = e.args[0]
+				raise ConnectionError(e.errno,'Connection error: {0}'.format(error))
 			
 			try:
 				json = simplejson.loads(fobj.read())
@@ -98,12 +115,16 @@ class execNamespace(baseNamespace):
 		return handler
 
 class jsonrpcAPI:
-	def __init__(self,mode='exec',url='http://127.0.0.1:8080/jsonrpc',user=None,password=None):
+	def __init__(self,mode='exec',url='http://127.0.0.1:8080',user=None,password=None):
 		self.__namespace = None
+		self.user = None
+		self.password = None
+		self.base = url
 		if mode == 'http':
-			if password: url = url.replace('http://','http://%s:%s@' % (user,password))
-			self.url = url
+			self.url = url + '/jsonrpc'
 			self.__namespace = httpNamespace
+			self.user = user
+			self.password = password
 		else:
 			self.__namespace = execNamespace
 		self.__namespace_cache = {}
