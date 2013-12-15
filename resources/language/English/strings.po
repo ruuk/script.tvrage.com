@@ -234,6 +234,10 @@ msgctxt "#32055"
 msgid "Loading episodes..."
 msgstr ""
 
+msgctxt "#32056"
+msgid "No shows in library."
+msgstr ""
+
 #empty strings from id 32056 to 32912
 
 msgctxt "#32913"

@@ -1,6 +1,10 @@
 TVRage-Eps Changelog
 
-Current Version : 1.0.11
+Current Version : 1.0.12
+
+*** 1.0.12 ***
+
+Now shows a dialog when the video library is empty
 
 *** 1.0.11 ***
 

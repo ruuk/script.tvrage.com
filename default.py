@@ -334,7 +334,9 @@ class TVRageEps(xbmcgui.WindowXML):
 			except jsonrpc.ConnectionError:
 				xbmcgui.Dialog().ok(__language__(32031),__language__(32035),__language__(32036),__language__(32037))
 				return
-			if not 'tvshows' in shows: return #TODO put a dialog here
+			if not 'tvshows' in shows:
+				xbmcgui.Dialog().ok(__language__(32031),__language__(32056))
+				return #TODO put a dialog here
 			tot = len(shows['tvshows'])
 			ct=0.0
 			added=0
