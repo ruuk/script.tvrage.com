@@ -1,6 +1,10 @@
 TVRage-Eps Changelog
 
-Current Version : 1.0.15
+Current Version : 1.0.16
+
+*** 1.0.16 ***
+
+Use Reqests module for http library access
 
 *** 1.0.15 ***
 

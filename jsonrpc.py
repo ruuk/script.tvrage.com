@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import urllib2, simplejson
+import requests, simplejson
 
 import warnings
 warnings.filterwarnings("ignore", category=UserWarning, module='urllib2')
@@ -47,39 +47,20 @@ class httpNamespace(baseNamespace):
 		self.__handler_cache = {}
 		self.api = api
 		self.name = name
-		password_mgr = urllib2.HTTPPasswordMgrWithDefaultRealm()
-		password_mgr.add_password(None, self.api.base, self.api.user, self.api.password)
-		handler = urllib2.HTTPBasicAuthHandler(password_mgr)
-		self.__opener = urllib2.build_opener(handler)
 		
 	def __getattr__(self, method):
 		if method in self.__handler_cache:
 			return self.__handler_cache[method]
-		
+
 		def handler(*args,**kwargs):
 			postdata = self.createParams(method,args,kwargs)
 			
 			try:
-				req = urllib2.Request(self.api.url)
-				req.add_header('Content-Type', 'application/json; charset=utf-8')
-				req.add_data(postdata)
-				fobj = self.__opener.open(req)
-			except IOError,e:
-				if isinstance(e,urllib2.HTTPError):
-					error = e.reason
-				else:
-					error = e.message or repr(e) or '?'
-				if e.args:
-					if e.args[0] == 'http error':
-						if e.args[1] == 401: raise UserPassError()
-					error = e.args[0]
-				raise ConnectionError(e.errno,'Connection error: {0}'.format(error))
+				req = requests.post(self.api.url,auth=(self.api.user,self.api.password),data=postdata)
+			except Exception,e:
+				raise ConnectionError(e.errno,'Connection error: {0}'.format(e))
 			
-			try:
-				json = simplejson.loads(fobj.read())
-			finally:
-				fobj.close()
-				
+			json = req.json()
 			if 'error' in json: raise JsonRPCError(json['error']['code'],json['error']['message'])
 			
 			return json['result']
