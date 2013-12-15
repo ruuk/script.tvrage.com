@@ -1,6 +1,10 @@
 TVRage-Eps Changelog
 
-Current Version : 1.0.14
+Current Version : 1.0.15
+
+*** 1.0.15 ***
+
+More error handling for HTTP access
 
 *** 1.0.14 ***
 

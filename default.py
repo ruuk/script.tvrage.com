@@ -9,7 +9,6 @@ from tvrageapi import Episode, Show, TVRageAPI
 
 __author__ = 'ruuk'
 __url__ = 'http://code.google.com/p/tvragexbmc/'
-__date__ = '1-21-2012'
 __addon__ = xbmcaddon.Addon(id='script.tvrage.com')
 __version__ = __addon__.getAddonInfo('version')
 __language__ = __addon__.getLocalizedString
@@ -339,6 +338,10 @@ class TVRageEps(xbmcgui.WindowXML):
 				xbmcgui.Dialog().ok(__language__(32031),__language__(32035),__language__(32036),__language__(32037))
 				LOG("JSONRPCAPI error: {0}".format(e.message))
 				return
+			except Exception, e:
+				LOG("JSONRPCAPI error: {0}".format(e.message))
+				xbmcgui.Dialog().ok(__language__(32031), e.message)
+				
 			if not 'tvshows' in shows:
 				xbmcgui.Dialog().ok(__language__(32031),__language__(32056))
 				return
