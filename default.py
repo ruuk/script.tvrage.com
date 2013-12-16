@@ -7,40 +7,36 @@ import jsonrpc
 import difflib, htmlentitydefs
 from tvrageapi import Episode, Show, TVRageAPI
 
-__author__ = 'ruuk'
-__url__ = 'http://code.google.com/p/tvragexbmc/'
 __addon__ = xbmcaddon.Addon(id='script.tvrage.com')
 __version__ = __addon__.getAddonInfo('version')
 __language__ = __addon__.getLocalizedString
 
-#for k in xbmc.__dict__.keys(): print k
-
-BASE_RESOURCE_PATH = xbmc.translatePath( os.path.join( __addon__.getAddonInfo('path'), 'resources') )
+BASE_RESOURCE_PATH = xbmc.translatePath( os.path.join( __addon__.getAddonInfo('path'), 'resources') ).decode('utf-8')
 sys.path.append (BASE_RESOURCE_PATH)
 
-IMAGE_PATH = xbmc.translatePath( os.path.join( __addon__.getAddonInfo('path'), 'resources', 'skin','Default','media') )
-THUMB_PATH = xbmc.translatePath('special://profile/addon_data/script.tvrage.com/images')
+IMAGE_PATH = xbmc.translatePath( os.path.join( __addon__.getAddonInfo('path'), 'resources', 'skin','Default','media') ).decode('utf-8')
+THUMB_PATH = xbmc.translatePath(os.path.join( __addon__.getAddonInfo('profile'),'images') ).decode('utf-8')
 if not os.path.exists(THUMB_PATH): os.makedirs(THUMB_PATH)
 
-ACTION_MOVE_LEFT      = 1
-ACTION_MOVE_RIGHT     = 2
-ACTION_MOVE_UP        = 3
-ACTION_MOVE_DOWN      = 4
-ACTION_PAGE_UP        = 5
-ACTION_PAGE_DOWN      = 6
-ACTION_SELECT_ITEM    = 7
-ACTION_HIGHLIGHT_ITEM = 8
-ACTION_PARENT_DIR     = 9
-ACTION_PREVIOUS_MENU  = 10
-ACTION_SHOW_INFO      = 11
-ACTION_PAUSE          = 12
-ACTION_STOP           = 13
-ACTION_NEXT_ITEM      = 14
-ACTION_PREV_ITEM      = 15
-ACTION_SHOW_GUI       = 18
-ACTION_PLAYER_PLAY           = 79
+ACTION_MOVE_LEFT        = 1
+ACTION_MOVE_RIGHT       = 2
+ACTION_MOVE_UP          = 3
+ACTION_MOVE_DOWN        = 4
+ACTION_PAGE_UP          = 5
+ACTION_PAGE_DOWN        = 6
+ACTION_SELECT_ITEM      = 7
+ACTION_HIGHLIGHT_ITEM   = 8
+ACTION_PARENT_DIR       = 9
+ACTION_PREVIOUS_MENU    = 10
+ACTION_SHOW_INFO        = 11
+ACTION_PAUSE            = 12
+ACTION_STOP             = 13
+ACTION_NEXT_ITEM        = 14
+ACTION_PREV_ITEM        = 15
+ACTION_SHOW_GUI         = 18
+ACTION_PLAYER_PLAY      = 79
 ACTION_MOUSE_LEFT_CLICK = 100
-ACTION_CONTEXT_MENU   = 117
+ACTION_CONTEXT_MENU     = 117
 
 import locale
 loc = locale.getdefaultlocale()
@@ -172,8 +168,8 @@ class TVRageEps(xbmcgui.WindowXML):
 		xbmcgui.WindowXML.__init__( self )
 	
 	def onInit(self):
-		self.lastUpdateFile = xbmc.translatePath('special://profile/addon_data/script.tvrage.com/last')
-		self.dataFile = xbmc.translatePath('special://profile/addon_data/script.tvrage.com/data')
+		self.lastUpdateFile = xbmc.translatePath( os.path.join( __addon__.getAddonInfo('profile'),'last') ).decode('utf-8')
+		self.dataFile = xbmc.translatePath( os.path.join( __addon__.getAddonInfo('profile'),'data') ).decode('utf-8')
 		self.loadSettings()
 		
 		self.shows = []

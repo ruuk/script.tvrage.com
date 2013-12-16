@@ -1,6 +1,11 @@
 TVRage-Eps Changelog
 
-Current Version : 1.1.0
+Current Version : 1.1.1
+
+*** 1.1.1 ***
+
+Convert 'special://' paths to current 'getAddonInfo()' method
+Add version to requests import in addon.xml
 
 *** 1.1.0 ***
 
