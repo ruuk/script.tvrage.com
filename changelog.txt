@@ -1,6 +1,11 @@
 TVRage-Eps Changelog
 
-Current Version : 1.0.17
+Current Version : 1.1.0
+
+*** 1.1.0 ***
+
+Minor code change for error handling
+Version bump for submission to official repo
 
 *** 1.0.17 ***
 

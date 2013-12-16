@@ -58,7 +58,7 @@ class httpNamespace(baseNamespace):
 			try:
 				req = requests.post(self.api.url,auth=(self.api.user,self.api.password),data=postdata)
 			except Exception,e:
-				raise ConnectionError(e.errno,'Connection error: {0}'.format(e))
+				raise ConnectionError(0,'Connection error: {0}'.format(e))
 			
 			json = req.json()
 			if 'error' in json: raise JsonRPCError(json['error']['code'],json['error']['message'])
