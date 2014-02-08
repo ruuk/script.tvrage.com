@@ -1,6 +1,11 @@
 TVRage-Eps Changelog
 
-Current Version : 1.1.1
+Current Version : 1.1.2
+
+*** 1.1.2 ***
+
+Changed requsts import to requests2
+Now uses requests session for TVRage api connections
 
 *** 1.1.1 ***
 

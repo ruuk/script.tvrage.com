@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
-import requests, simplejson
+import requests2 as requests
+import simplejson
 
-import warnings
-warnings.filterwarnings("ignore", category=UserWarning, module='urllib2')
 
 try:
 	import xbmc #@UnresolvedImport

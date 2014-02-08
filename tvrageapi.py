@@ -1,4 +1,5 @@
 import os, sys, time, re, urllib, traceback
+import requests2 as requests
 
 try:
 	import elementtree.ElementTree as etree #@UnresolvedImport @UnusedImport
@@ -189,6 +190,9 @@ class TVRageAPI:
 	_info_url = 'http://services.tvrage.com/feeds/episodeinfo.php?sid='
 	_eplist_url = 'http://services.tvrage.com/feeds/episode_list.php?sid='
 	
+	def __init__(self):
+		self.session = requests.Session()
+		
 	def getShowInfo(self,showid):
 		url = self._info_url + str(showid)
 		return self.getTree(url)
@@ -205,7 +209,7 @@ class TVRageAPI:
 		return self.getTree(url)
 		
 	def getTree(self,url):
-		xml = self.getURLData(url,readlines=False)
+		xml = self.getURLData(url)
 		if not xml:
 			LOG('TVRage-Eps: ERROR GETTING XML DATA')
 			return None
@@ -217,7 +221,7 @@ class TVRageAPI:
 			return None
 		
 	def getEpSummary(self,url):
-		data = self.getURLData(url,readlines=False)
+		data = self.getURLData(url)
 		if not data: return "ERROR - NO DATA"
 		pre,post = data.split("<div class='show_synopsis'>",1)
 		post = re.sub('[\n\t\r]','',post)
@@ -234,20 +238,12 @@ class TVRageAPI:
 		html = re.sub('<script.*?</script>','',html)
 		return html
 	
-	def getURLData(self,url,readlines=True):
+	def getURLData(self,url):
 		try:
-			w = urllib.urlopen(url)
+			linedata = self.session.get(url).text
 		except:
-			ERROR('getURLData(): FAILED TO OPEN URL: %s' % url)
-			raise
-		try:
-			if readlines: linedata = w.readlines()
-			else: linedata = w.read()
-		except:
-			w.close()
 			ERROR('getURLData(): FAILED TO READ DATA - URL: %s' % url)
 			return None
-		w.close()
 		return linedata
 	
 def saveURLToFile(url,fname,hook=None,e_hook=None):
