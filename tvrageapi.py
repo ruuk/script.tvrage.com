@@ -27,6 +27,7 @@ class Show:
 		self.name = name
 		self.imagefile = os.path.join(self.THUMB_PATH,self.showid + '.jpg')
 		self.init()
+		self.tree = None
 		if xmltree:
 			self.tree = xmltree
 			self.processTree(xmltree)
@@ -133,6 +134,9 @@ class Show:
 		return self.nextUnix + (offset * 3600)
 		
 	def xml(self):
+		if not self.tree:
+			LOG('Failed to create XML for show: {0} (ID: {1})'.format(self.name,self.showid))
+			return ''
 		return etree.tostring(self.tree).strip()
 
 		"""
