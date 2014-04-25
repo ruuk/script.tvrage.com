@@ -1,6 +1,10 @@
 TVRage-Eps Changelog
 
-Current Version : 1.1.3
+Current Version : 1.1.4
+
+*** 1.1.4 ***
+
+Fix for errors caused by encoding issues
 
 *** 1.1.3 ***
 

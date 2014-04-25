@@ -221,7 +221,7 @@ class TVRageAPI:
 		try:
 			return etree.fromstring(xml)
 		except:
-			LOG('TVRage-Eps: BAD XML DATA')
+			ERROR('TVRage-Eps: BAD XML DATA',short=True)
 			return None
 		
 	def getEpSummary(self,url):
@@ -244,7 +244,8 @@ class TVRageAPI:
 	
 	def getURLData(self,url):
 		try:
-			linedata = self.session.get(url).text
+			r = self.session.get(url)
+			linedata = r.text.encode('utf-8')
 		except:
 			ERROR('getURLData(): FAILED TO READ DATA - URL: %s' % url)
 			return None
