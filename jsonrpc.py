@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import requests2 as requests
+import requests
 import simplejson
 
 

@@ -1,5 +1,5 @@
 import os, sys, time, re, urllib, traceback
-import requests2 as requests
+import requests
 
 try:
 	import elementtree.ElementTree as etree #@UnresolvedImport @UnusedImport

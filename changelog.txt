@@ -1,6 +1,8 @@
 TVRage-Eps Changelog
 
-Current Version : 1.1.4
+*** 1.1.5 ***
+
+Changed requests2 import to requests-2.3.0
 
 *** 1.1.4 ***
 
