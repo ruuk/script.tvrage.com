@@ -5,12 +5,12 @@ try:
 	import elementtree.ElementTree as etree #@UnresolvedImport @UnusedImport
 except:
 	import xml.etree.ElementTree as etree #@Reimport
-	
+
 DEBUG = False
 
 def LOG(msg):
 	print msg.encode('ascii','replace')
-	
+
 def ERROR(msg,short=False):
 	if short and not DEBUG:
 		err = str(sys.exc_info()[1])
@@ -18,7 +18,7 @@ def ERROR(msg,short=False):
 	else:
 		LOG(msg)
 		traceback.print_exc()
-	
+
 class Show:
 	THUMB_PATH = ''
 	API = None
@@ -33,7 +33,7 @@ class Show:
 			self.processTree(xmltree)
 		elif self.isDummy():
 			self.tree = etree.fromstring('<show id="0"><name>'+name+'</name></show>')
-		
+
 	def init(self):
 		self._airtime = ''
 		self.next = {}
@@ -43,18 +43,18 @@ class Show:
 		self.canceled = ''
 		self.lastEp = {'number':'?','title':'Unknown','date':''}
 		self.nextEp = {'number':'?','title':'Unknown','date':''}
-		
-			
+
+
 	def isDummy(self):
 		return self.showid == '0'
-		
+
 	def getShowData(self):
 		if self.isDummy(): return
 		self.init()
 		tree = self.API.getShowInfo(self.showid)
 		self.processTree(tree)
 		return self
-		
+
 	def processTree(self,show):
 		if not show: return
 		sid = show.attrib.get('id',self.showid)
@@ -67,13 +67,13 @@ class Show:
 		self.imagefile = os.path.join(self.THUMB_PATH,self.showid + '.jpg')
 		self.name = show.find('name').text
 		if self.isDummy(): return
-		
+
 		try: self._airtime = re.findall('\d+:\d\d\s\w\w',show.find('airtime').text)[0]
 		except: pass
 		if not self._airtime:
 			try: self._airtime = show.find('airtime').text.rsplit('at ',1)[-1]
 			except: pass
-			
+
 		self.status = show.find('status').text
 		if 'Ended' in self.status or 'Cancel' in self.status:
 			ended = show.find('ended').text
@@ -85,13 +85,13 @@ class Show:
 					try: sc = time.strftime('%b %Y',time.strptime(ended,'%Y-%m-00'))
 					except: pass
 			self.canceled = sc
-			
+
 		last = show.find('latestepisode')
 		self.lastEp = self.epInfo(last)
-		
+
 		nextEp = show.find('nextepisode')
 		if nextEp: self.nextEp = self.epInfo(nextEp)
-		
+
 		if not os.path.exists(self.imagefile):
 			try:
 				iurl = 'http://images.tvrage.com/shows/'+str(int(self.showid[0:-3]) + 1)+'/'+self.showid + '.jpg'
@@ -99,7 +99,7 @@ class Show:
 				print "IMAGE ERROR - SHOWID: " + self.showid
 				return
 			saveURLToFile(iurl,self.imagefile)
-				
+
 	def airtime(self,offset=0):
 		if not self.nextEp.get('date'):
 			try:
@@ -112,15 +112,15 @@ class Show:
 				return self._airtime
 		else:
 			return time.strftime('%I:%M %p',time.localtime(self.getNextUnix(offset=offset)))
-		
+
 	def epInfo(self,eptree):
-		try: 		return {'number':eptree.find('number').text,'title':eptree.find('title').text,'date':eptree.find('airdate').text}
+		try: 		return {'number':eptree.find('number').text or '','title':eptree.find('title').text or '','date':eptree.find('airdate').text or ''}
 		except: 	return {'number':'?','title':'Unknown','date':'?'}
-		
+
 	def getSortValue(self):
 		srt = self.getNextUnix(forceupdate=True)
 		return str(srt) + '@' + self.name
-		
+
 	def getNextUnix(self,forceupdate=False,offset=0):
 		if forceupdate or not self.nextUnix:
 			try:
@@ -132,7 +132,7 @@ class Show:
 				elif self.isDummy(): srt += 3601
 			self.nextUnix = srt
 		return self.nextUnix + (offset * 3600)
-		
+
 	def xml(self):
 		if not self.tree:
 			LOG('Failed to create XML for show: {0} (ID: {1})'.format(self.name,self.showid))
@@ -153,7 +153,7 @@ class Show:
 			<runtime>30</runtime>
 			<ended>1969-06-03</ended>
 		"""
-		
+
 class Episode:
 	_image_url_base = 'http://images.tvrage.com/screencaps/'
 
@@ -169,7 +169,7 @@ class Episode:
 		self.showid = showid
 		if xmltree:
 			self.processTree(xmltree)
-	
+
 	def processTree(self,tree):
 		self.title = tree.find('title').text
 		self.number = tree.find('epnum').text
@@ -178,10 +178,10 @@ class Episode:
 		self.prodnum = tree.find('prodnum').text
 		self.link = tree.find('link').text
 		self.epid = self.link.rsplit('/',1)[-1]
-		
+
 	def getEPxSEASON(self):
 		return self.season + 'x' + self.epnum
-	
+
 	def getImageUrls(self):
 		#This seems to work but...
 		num = int(int(self.showid) / 200) + 1
@@ -193,25 +193,25 @@ class TVRageAPI:
 	_search_url = 'http://services.tvrage.com/feeds/search.php?show='
 	_info_url = 'http://services.tvrage.com/feeds/episodeinfo.php?sid='
 	_eplist_url = 'http://services.tvrage.com/feeds/episode_list.php?sid='
-	
+
 	def __init__(self):
 		self.session = requests.Session()
-		
+
 	def getShowInfo(self,showid):
 		url = self._info_url + str(showid)
 		return self.getTree(url)
-		
+
 	def search(self,show):
 		try:
 			url = self._search_url + urllib.quote_plus(show.encode('utf-8'))
 		except:
 			url = self._search_url + show.replace(' ','_')
 		return self.getTree(url)
-		
+
 	def getEpList(self,showid):
 		url = self._eplist_url + str(showid)
 		return self.getTree(url)
-		
+
 	def getTree(self,url):
 		xml = self.getURLData(url)
 		if not xml:
@@ -223,7 +223,7 @@ class TVRageAPI:
 		except:
 			ERROR('TVRage-Eps: BAD XML DATA',short=True)
 			return None
-		
+
 	def getEpSummary(self,url):
 		data = self.getURLData(url)
 		if not data: return "ERROR - NO DATA"
@@ -238,10 +238,10 @@ class TVRageAPI:
 			html = html.replace('<br>','\n')
 		else:
 			html = post
-			
+
 		html = re.sub('<script.*?</script>','',html)
 		return html
-	
+
 	def getURLData(self,url):
 		try:
 			r = self.session.get(url)
@@ -250,7 +250,7 @@ class TVRageAPI:
 			ERROR('getURLData(): FAILED TO READ DATA - URL: %s' % url)
 			return None
 		return linedata
-	
+
 def saveURLToFile(url,fname,hook=None,e_hook=None):
 	try:
 		urllib.urlretrieve(url,fname,hook)

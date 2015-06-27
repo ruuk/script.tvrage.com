@@ -1,5 +1,9 @@
 TVRage-Eps Changelog
 
+*** 1.1.6 ***
+
+Possible fix for errors on empty next episode fields
+
 *** 1.1.5 ***
 
 Changed requests2 import to requests-2.3.0
